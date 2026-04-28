@@ -1,0 +1,27 @@
+<div class="container" style="max-width: 720px;">
+    <div class="page-header">
+        <a href="/vacancies/<%= vacancy.id %>" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">← Назад к вакансии</a>
+        <h1 style="margin-top: 16px;">Отклик на вакансию</h1>
+    </div>
+
+    <div class="detail-section">
+        <h2 style="margin-bottom: 16px;"><%= vacancy.title %></h2>
+        <div class="detail-meta">
+            <span><%= vacancy.organization_name %></span>
+            <span><%= vacancy.city %></span>
+            <span><%= vacancy.profession %></span>
+        </div>
+    </div>
+
+    <div class="detail-section">
+        <form action="/vacancies/<%= vacancy.id %>/respond" method="POST">
+            <div class="form-group">
+                <label for="message">Сопроводительное письмо</label>
+                <textarea id="message" name="message" class="form-control" placeholder="Расскажите о себе, своём опыте и почему вы подходите на эту позицию..." style="min-height: 200px;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Отправить отклик</button>
+            <a href="/vacancies/<%= vacancy.id %>" class="btn btn-secondary" style="margin-left: 12px;">Отмена</a>
+        </form>
+    </div>
+</div>

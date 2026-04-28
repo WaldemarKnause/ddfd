@@ -1,0 +1,79 @@
+<div class="container">
+    <div class="page-header">
+        <a href="/vacancies" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">← Назад к вакансиям</a>
+    </div>
+
+    <div class="detail-header">
+        <h1><%= vacancy.title %></h1>
+        <div class="detail-meta">
+            <span><strong><%= vacancy.organization_name %></strong> · <%= vacancy.organization_type || '' %></span>
+            <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <%= vacancy.city %>
+            </span>
+            <span><%= vacancy.profession %></span>
+            <% if (vacancy.employment_type) { %>
+                <span><%= vacancy.employment_type %></span>
+            <% } %>
+        </div>
+    </div>
+
+    <% if (vacancy.salary_from || vacancy.salary_to) { %>
+        <div class="detail-section" style="background: rgba(16, 185, 129, 0.05); border-color: var(--success);">
+            <h2 style="color: var(--success);">Заработная плата</h2>
+            <div class="salary" style="font-size: 24px;">
+                <%= vacancy.salary_from ? vacancy.salary_from.toLocaleString() : '' %><% if (vacancy.salary_from && vacancy.salary_to) { %> — <% } %><%= vacancy.salary_to ? vacancy.salary_to.toLocaleString() : '' %> ₽
+            </div>
+        </div>
+    <% } %>
+
+    <% if (vacancy.description) { %>
+        <div class="detail-section">
+            <h2>Описание вакансии</h2>
+            <p><%= vacancy.description %></p>
+        </div>
+    <% } %>
+
+    <% if (vacancy.requirements) { %>
+        <div class="detail-section">
+            <h2>Требования</h2>
+            <p><%= vacancy.requirements %></p>
+        </div>
+    <% } %>
+
+    <div class="detail-section">
+        <h2>О работодателе</h2>
+        <p><strong><%= vacancy.organization_name %></strong><% if (vacancy.organization_type) { %> (<%= vacancy.organization_type %>)<% } %></p>
+        <% if (vacancy.employer_city) { %>
+            <p style="margin-top: 8px; color: var(--text-secondary);">Город: <%= vacancy.employer_city %></p>
+        <% } %>
+        <p style="margin-top: 8px; color: var(--text-secondary);">Email: <a href="mailto:<%= vacancy.employer_email %>" style="color: var(--accent);"><%= vacancy.employer_email %></a></p>
+        <% if (vacancy.employer_phone) { %>
+            <p style="color: var(--text-secondary);">Телефон: <%= vacancy.employer_phone %></p>
+        <% } %>
+    </div>
+
+    <div style="margin-top: 32px;">
+        <% if (user) { %>
+            <% if (user.type === 'specialist') { %>
+                <% if (hasResponded) { %>
+                    <div class="success-message">Вы уже откликнулись на эту вакансию</div>
+                    <a href="/chat/<%= vacancy.id %>" class="btn btn-primary">Перейти в чат</a>
+                <% } else { %>
+                    <a href="/vacancies/<%= vacancy.id %>/respond" class="btn btn-primary btn-lg">Откликнуться</a>
+                <% } %>
+            <% } else if (user.type === 'employer' && user.id === vacancy.user_id) { %>
+                <a href="/vacancy/<%= vacancy.id %>/responses" class="btn btn-primary">Отклики</a>
+            <% } else if (user.type === 'admin') { %>
+                <a href="/admin/vacancy/<%= vacancy.id %>/responses" class="btn btn-secondary">Все отклики</a>
+            <% } %>
+        <% } else { %>
+            <div class="alert alert-warning">
+                <a href="/login">Войдите</a> или <a href="/register">зарегистрируйтесь</a> как специалист, чтобы откликнуться на вакансию
+            </div>
+        <% } %>
+    </div>
+</div>

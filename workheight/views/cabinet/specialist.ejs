@@ -1,0 +1,180 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Личный кабинет</h1>
+    </div>
+
+    <div class="cabinet-grid">
+        <aside class="cabinet-sidebar">
+            <div style="margin-bottom: 24px; text-align: center;">
+                <div class="chat-avatar" style="width: 64px; height: 64px; font-size: 24px; margin: 0 auto 12px;"><%= user.full_name.charAt(0).toUpperCase() %></div>
+                <h3 style="font-size: 16px;"><%= user.full_name %></h3>
+                <p style="color: var(--text-secondary); font-size: 13px;"><%= user.profession %></p>
+            </div>
+
+            <ul class="cabinet-nav">
+                <li>
+                    <a href="#resume" class="active" onclick="showSection('resume'); return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                        </svg>
+                        Моё резюме
+                    </a>
+                </li>
+                <li>
+                    <a href="#responses" onclick="showSection('responses'); return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <path d="M22 6l-10 7L2 6"/>
+                        </svg>
+                        Мои отклики
+                    </a>
+                </li>
+                <li>
+                    <a href="#chat" onclick="showSection('chat'); return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                        Сообщения
+                        <% if (unreadCount > 0) { %>
+                            <span class="notification-badge"><%= unreadCount %></span>
+                        <% } %>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="cabinet-content">
+            <!-- Resume Section -->
+            <section id="resume-section" class="cabinet-section">
+                <div class="flex-between">
+                    <h2>Моё резюме</h2>
+                    <% if (resume) { %>
+                        <a href="/resumes/create" class="btn btn-secondary">Редактировать</a>
+                    <% } %>
+                </div>
+
+                <% if (!resume) { %>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <path d="M14 2v6h6"/>
+                        </svg>
+                        <h3>Резюме не создано</h3>
+                        <p>Создайте резюме, чтобы работодатели могли найти вас</p>
+                        <a href="/resumes/create" class="btn btn-primary" style="margin-top: 16px;">Создать резюме</a>
+                    </div>
+                <% } else { %>
+                    <div class="vacancy-card" style="margin-top: 16px;">
+                        <h3><%= resume.profession %></h3>
+                        <div class="company"><%= user.city %></div>
+                        <div class="vacancy-meta">
+                            <span>Опыт: <%= resume.experience_years || 0 %> лет</span>
+                            <% if (resume.salary_expectation) { %>
+                                <span class="salary"><%= resume.salary_expectation.toLocaleString() %> ₽</span>
+                            <% } %>
+                        </div>
+                        <div class="tags" style="margin-top: 12px;">
+                            <span class="tag"><%= resume.profession %></span>
+                        </div>
+                    </div>
+                <% } %>
+            </section>
+
+            <!-- Responses Section -->
+            <section id="responses-section" class="cabinet-section" style="display: none;">
+                <h2>Мои отклики</h2>
+
+                <% if (responses.length === 0) { %>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <path d="M22 6l-10 7L2 6"/>
+                        </svg>
+                        <h3>Нет откликов</h3>
+                        <p>Откликнитесь на вакансию, чтобы связаться с работодателем</p>
+                        <a href="/vacancies" class="btn btn-primary" style="margin-top: 16px;">Найти вакансии</a>
+                    </div>
+                <% } else { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Вакансия</th>
+                                <th>Компания</th>
+                                <th>Статус</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% responses.forEach(response => { %>
+                                <tr>
+                                    <td>
+                                        <a href="/vacancies/<%= response.vacancy_id %>" style="color: var(--accent);"><%= response.vacancy_title %></a>
+                                        <div style="font-size: 13px; color: var(--text-secondary);"><%= response.city %></div>
+                                    </td>
+                                    <td><%= response.organization_name %></td>
+                                    <td>
+                                        <% if (response.status === 'pending') { %>
+                                            <span class="badge badge-pending">На рассмотрении</span>
+                                        <% } else if (response.status === 'accepted') { %>
+                                            <span class="badge badge-approved">Принят</span>
+                                        <% } else { %>
+                                            <span class="badge badge-rejected">Отклонён</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (response.status !== 'rejected') { %>
+                                            <a href="/vacancies/<%= response.vacancy_id %>" class="btn btn-sm btn-secondary">Чат</a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } %>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="chat-section" class="cabinet-section" style="display: none;">
+                <h2>Сообщения</h2>
+
+                <% if (chats.length === 0) { %>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                        <h3>Нет сообщений</h3>
+                        <p>Начните общение, откликнувшись на вакансию</p>
+                    </div>
+                <% } else { %>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <% chats.forEach(c => { %>
+                            <a href="/chat/<%= c.id %>" class="vacancy-card" style="display: flex; align-items: center; gap: 16px;">
+                                <div class="chat-avatar"><%= c.other_name ? c.other_name.charAt(0).toUpperCase() : '?' %></div>
+                                <div style="flex: 1;">
+                                    <strong><%= c.other_name %></strong>
+                                    <div style="color: var(--text-secondary); font-size: 13px;"><%= c.last_message || '' %></div>
+                                </div>
+                            </a>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+function showSection(name) {
+    document.querySelectorAll('.cabinet-section').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.cabinet-nav a').forEach(a => a.classList.remove('active'));
+
+    document.getElementById(name + '-section').style.display = 'block';
+    event.target.closest('a').classList.add('active');
+}
+
+// Check URL hash on load
+if (window.location.hash) {
+    showSection(window.location.hash.substring(1));
+}
+</script>

@@ -1,0 +1,202 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Личный кабинет работодателя</h1>
+    </div>
+
+    <div class="cabinet-grid">
+        <aside class="cabinet-sidebar">
+            <div style="margin-bottom: 24px; text-align: center;">
+                <div class="chat-avatar" style="width: 64px; height: 64px; font-size: 24px; margin: 0 auto 12px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><%= user.organization_name ? user.organization_name.charAt(0).toUpperCase() : '?' %></div>
+                <h3 style="font-size: 16px;"><%= user.organization_name %></h3>
+                <p style="color: var(--text-secondary); font-size: 13px;">Работодатель</p>
+            </div>
+
+            <ul class="cabinet-nav">
+                <li>
+                    <a href="#vacancies" class="active" onclick="showSection('vacancies'); return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 12H4M12 20V4"/>
+                        </svg>
+                        Мои вакансии
+                    </a>
+                </li>
+                <li>
+                    <a href="#responses" onclick="showSection('responses'); return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <path d="M22 6l-10 7L2 6"/>
+                        </svg>
+                        Отклики
+                    </a>
+                </li>
+                <li>
+                    <a href="#chat" onclick="showSection('chat'); return false;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                        Сообщения
+                        <% if (unreadCount > 0) { %>
+                            <span class="notification-badge"><%= unreadCount %></span>
+                        <% } %>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="cabinet-content">
+            <!-- Vacancies Section -->
+            <section id="vacancies-section" class="cabinet-section">
+                <div class="flex-between">
+                    <h2>Мои вакансии</h2>
+                    <a href="/vacancies/create" class="btn btn-primary">+ Создать вакансию</a>
+                </div>
+
+                <% if (vacancies.length === 0) { %>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 12H4M12 20V4"/>
+                        </svg>
+                        <h3>Нет вакансий</h3>
+                        <p>Создайте первую вакансию для поиска специалистов</p>
+                        <a href="/vacancies/create" class="btn btn-primary" style="margin-top: 16px;">Создать вакансию</a>
+                    </div>
+                <% } else { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Вакансия</th>
+                                <th>Город</th>
+                                <th>Статус</th>
+                                <th>Откликов</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% vacancies.forEach(v => { %>
+                                <tr>
+                                    <td>
+                                        <a href="/vacancies/<%= v.id %>" style="color: var(--accent);"><%= v.title %></a>
+                                        <div style="font-size: 13px; color: var(--text-secondary);"><%= v.profession %></div>
+                                    </td>
+                                    <td><%= v.city %></td>
+                                    <td>
+                                        <% if (v.status === 'pending') { %>
+                                            <span class="badge badge-pending">На модерации</span>
+                                        <% } else if (v.status === 'approved') { %>
+                                            <span class="badge badge-approved">Активна</span>
+                                        <% } else { %>
+                                            <span class="badge badge-rejected">Отклонена</span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= v.responseCount || 0 %></td>
+                                    <td>
+                                        <% if (v.responseCount > 0) { %>
+                                            <a href="/vacancy/<%= v.id %>/responses" class="btn btn-sm btn-primary">Посмотреть</a>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } %>
+            </section>
+
+            <!-- Responses Section -->
+            <section id="responses-section" class="cabinet-section" style="display: none;">
+                <h2>Все отклики</h2>
+
+                <% 
+                const allResponses = [];
+                vacancies.forEach(v => {
+                    const responses = db.prepare(`
+                        SELECT r.*, u.full_name, u.profession, u.city, u.phone
+                        FROM responses r
+                        JOIN users u ON r.user_id = u.id
+                        WHERE r.vacancy_id = ? AND r.status = 'pending'
+                    `).all(v.id);
+                    responses.forEach(r => allResponses.push({ ...r, vacancy_title: v.title, vacancy_id: v.id }));
+                });
+                %>
+
+                <% if (allResponses.length === 0) { %>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <path d="M22 6l-10 7L2 6"/>
+                        </svg>
+                        <h3>Нет новых откликов</h3>
+                        <p>Отклики от специалистов появятся здесь</p>
+                    </div>
+                <% } else { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Кандидат</th>
+                                <th>Вакансия</th>
+                                <th>Специальность</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% allResponses.forEach(r => { %>
+                                <tr>
+                                    <td>
+                                        <strong><%= r.full_name %></strong><br>
+                                        <span style="color: var(--text-secondary); font-size: 13px;"><%= r.city %></span>
+                                    </td>
+                                    <td><a href="/vacancies/<%= r.vacancy_id %>" style="color: var(--accent);"><%= r.vacancy_title %></a></td>
+                                    <td><%= r.profession %></td>
+                                    <td>
+                                        <a href="/vacancy/<%= r.vacancy_id %>/responses" class="btn btn-sm btn-secondary">Посмотреть</a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } %>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="chat-section" class="cabinet-section" style="display: none;">
+                <h2>Сообщения</h2>
+
+                <% if (chats.length === 0) { %>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                        <h3>Нет сообщений</h3>
+                        <p>Сообщения от специалистов появятся после отклика на вакансию</p>
+                    </div>
+                <% } else { %>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <% chats.forEach(c => { %>
+                            <a href="/chat/<%= c.id %>" class="vacancy-card" style="display: flex; align-items: center; gap: 16px;">
+                                <div class="chat-avatar"><%= c.other_name ? c.other_name.charAt(0).toUpperCase() : '?' %></div>
+                                <div style="flex: 1;">
+                                    <strong><%= c.other_name %></strong>
+                                    <div style="color: var(--text-secondary); font-size: 13px;"><%= c.last_message || '' %></div>
+                                </div>
+                            </a>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+function showSection(name) {
+    document.querySelectorAll('.cabinet-section').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.cabinet-nav a').forEach(a => a.classList.remove('active'));
+
+    document.getElementById(name + '-section').style.display = 'block';
+    event.target.closest('a').classList.add('active');
+}
+
+// Check URL hash on load
+if (window.location.hash) {
+    showSection(window.location.hash.substring(1));
+}
+</script>

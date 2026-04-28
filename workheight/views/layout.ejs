@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title + ' — ' : '' %>WorkHeight</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-user-id="<%= user ? user.id : '' %>">
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                WorkHeight
+            </a>
+
+            <nav class="nav">
+                <a href="/vacancies">Вакансии</a>
+                <a href="/resumes">Резюме</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" title="Сменить тему">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+
+                <% if (user) { %>
+                    <% if (user.type === 'specialist') { %>
+                        <a href="/cabinet/specialist" class="btn btn-secondary">Личный кабинет</a>
+                    <% } else if (user.type === 'employer') { %>
+                        <a href="/cabinet/employer" class="btn btn-secondary">Личный кабинет</a>
+                    <% } else if (user.type === 'admin') { %>
+                        <a href="/admin" class="btn btn-secondary">Админ-панель</a>
+                    <% } %>
+                    <a href="/logout" class="btn btn-secondary">Выход</a>
+                <% } else { %>
+                    <a href="/login" class="btn btn-secondary">Войти</a>
+                    <a href="/register" class="btn btn-primary">Регистрация</a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <%- body %>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div>&copy; 2024 WorkHeight — Доска вакансий для промышленных специалистов</div>
+                <div>Пескоструйщики • Маляры • Промышленные альпинисты</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/theme.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

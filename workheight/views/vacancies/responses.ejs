@@ -1,0 +1,81 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Отклики на вакансию</h1>
+    </div>
+
+    <div class="detail-section">
+        <h2 style="margin-bottom: 8px;"><%= vacancy.title %></h2>
+        <p style="color: var(--text-secondary);"><%= vacancy.city %> · <%= vacancy.profession %></p>
+    </div>
+
+    <% if (responses.length === 0) { %>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 12H4M12 20V4"/>
+            </svg>
+            <h3>Пока нет откликов</h3>
+            <p>Отклики от специалистов появятся здесь</p>
+        </div>
+    <% } else { %>
+        <div class="cabinet-section">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Кандидат</th>
+                        <th>Контакты</th>
+                        <th>Резюме</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% responses.forEach(response => { %>
+                        <tr>
+                            <td>
+                                <strong><%= response.full_name %></strong><br>
+                                <span style="color: var(--text-secondary); font-size: 13px;"><%= response.city %></span>
+                            </td>
+                            <td>
+                                <% if (response.phone) { %>
+                                    <%= response.phone %><br>
+                                <% } %>
+                                <a href="mailto:<%= response.email %>" style="color: var(--accent); font-size: 13px;"><%= response.email %></a>
+                            </td>
+                            <td>
+                                <% if (response.profession) { %>
+                                    <strong><%= response.profession %></strong><br>
+                                    <span style="color: var(--text-secondary); font-size: 13px;">Опыт: <%= response.experience_years %> лет</span>
+                                <% } else { %>
+                                    <span style="color: var(--text-secondary);">Не заполнено</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (response.status === 'pending') { %>
+                                    <span class="badge badge-pending">Новый</span>
+                                <% } else if (response.status === 'accepted') { %>
+                                    <span class="badge badge-approved">Принят</span>
+                                <% } else { %>
+                                    <span class="badge badge-rejected">Отклонён</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (response.status === 'pending') { %>
+                                    <div class="actions">
+                                        <form action="/vacancy/<%= vacancy.id %>/response/<%= response.id %>/status" method="POST" style="display: inline;">
+                                            <input type="hidden" name="status" value="accepted">
+                                            <button type="submit" class="btn btn-sm btn-primary">Принять</button>
+                                        </form>
+                                        <form action="/vacancy/<%= vacancy.id %>/response/<%= response.id %>/status" method="POST" style="display: inline;">
+                                            <input type="hidden" name="status" value="rejected">
+                                            <button type="submit" class="btn btn-sm btn-secondary">Отклонить</button>
+                                        </form>
+                                    </div>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+</div>

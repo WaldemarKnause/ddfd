@@ -1,0 +1,151 @@
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Регистрация</h1>
+            <p>Создайте аккаунт на платформе</p>
+        </div>
+
+        <% if (error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab active" data-type="specialist">Специалист</button>
+            <button type="button" class="auth-tab" data-type="employer">Работодатель</button>
+        </div>
+
+        <form action="/register" method="POST">
+            <input type="hidden" name="type" id="userType" value="specialist">
+
+            <!-- Specialist Fields -->
+            <div class="register-fields" data-type="specialist">
+                <div class="form-group">
+                    <label for="full_name">ФИО</label>
+                    <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Иванов Иван Иванович">
+                </div>
+
+                <div class="form-group">
+                    <label for="specialist_email">Email</label>
+                    <input type="email" id="specialist_email" name="email" class="form-control" required placeholder="email@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="specialist_password">Пароль</label>
+                    <input type="password" id="specialist_password" name="password" class="form-control" required placeholder="Минимум 6 символов">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Телефон</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" placeholder="+7 (999) 123-45-67">
+                </div>
+
+                <div class="form-group">
+                    <label for="city">Город</label>
+                    <input type="text" id="city" name="city" class="form-control" placeholder="Москва">
+                </div>
+
+                <div class="form-group">
+                    <label for="profession">Специальность</label>
+                    <select id="profession" name="profession" class="form-control" required>
+                        <option value="">Выберите специальность</option>
+                        <option value="Пескоструйщик">Пескоструйщик</option>
+                        <option value="Маляр">Маляр</option>
+                        <option value="Промышленный альпинист">Промышленный альпинист</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Employer Fields -->
+            <div class="register-fields" data-type="employer" style="display: none;">
+                <div class="form-group">
+                    <label for="organization_name">Название организации</label>
+                    <input type="text" id="organization_name" name="organization_name" class="form-control" placeholder="ООО «СтройПром»">
+                </div>
+
+                <div class="form-group">
+                    <label for="employer_email">Email</label>
+                    <input type="email" id="employer_email" name="email" class="form-control" required placeholder="contact@company.ru">
+                </div>
+
+                <div class="form-group">
+                    <label for="employer_password">Пароль</label>
+                    <input type="password" id="employer_password" name="password" class="form-control" required placeholder="Минимум 6 символов">
+                </div>
+
+                <div class="form-group">
+                    <label for="organization_type">Тип организации</label>
+                    <select id="organization_type" name="organization_type" class="form-control" required>
+                        <option value="">Выберите тип</option>
+                        <option value="ООО">ООО</option>
+                        <option value="ИП">ИП</option>
+                        <option value="АО">АО</option>
+                        <option value="ЗАО">ЗАО</option>
+                        <option value="ПАО">ПАО</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="inn">ИНН организации</label>
+                    <input type="text" id="inn" name="inn" class="form-control" placeholder="1234567890">
+                </div>
+
+                <div class="form-group">
+                    <label for="employer_phone">Телефон</label>
+                    <input type="tel" id="employer_phone" name="phone" class="form-control" placeholder="+7 (999) 123-45-67">
+                </div>
+
+                <div class="form-group">
+                    <label for="employer_city">Город</label>
+                    <input type="text" id="employer_city" name="city" class="form-control" placeholder="Москва">
+                </div>
+
+                <div class="form-group">
+                    <label for="organization_description">Описание компании</label>
+                    <textarea id="organization_description" name="organization_description" class="form-control" placeholder="Расскажите о вашей компании..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+        </form>
+
+        <div class="auth-footer">
+            Уже есть аккаунт? <a href="/login">Войти</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const type = tab.dataset.type;
+        document.getElementById('userType').value = type;
+
+        document.querySelectorAll('.register-fields').forEach(fields => {
+            fields.style.display = fields.dataset.type === type ? 'block' : 'none';
+        });
+
+        // Update required attributes
+        const specialistFields = document.querySelector('.register-fields[data-type="specialist"]');
+        const employerFields = document.querySelector('.register-fields[data-type="employer"]');
+
+        if (type === 'specialist') {
+            specialistFields.querySelectorAll('input, select').forEach(el => {
+                if (el.name !== 'email' && el.name !== 'password') {
+                    el.removeAttribute('required');
+                }
+            });
+            employerFields.querySelectorAll('input, select, textarea').forEach(el => el.removeAttribute('required'));
+        } else {
+            employerFields.querySelectorAll('input, select, textarea').forEach(el => {
+                if (el.name !== 'organization_description') {
+                    el.setAttribute('required', '');
+                }
+            });
+            specialistFields.querySelectorAll('input, select').forEach(el => el.removeAttribute('required'));
+        }
+    });
+});
+</script>

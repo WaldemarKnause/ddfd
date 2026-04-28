@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Админ-панель</h1>
+    </div>
+
+    <div class="admin-stats" style="margin-bottom: 32px;">
+        <div class="stat-card">
+            <div class="stat-value"><%= stats.totalUsers %></div>
+            <div class="stat-label">Пользователей</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value"><%= stats.totalVacancies %></div>
+            <div class="stat-label">Вакансий всего</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" style="color: var(--warning);"><%= stats.pendingVacancies %></div>
+            <div class="stat-label">На модерации</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value"><%= stats.totalResumes %></div>
+            <div class="stat-label">Резюме</div>
+        </div>
+    </div>
+
+    <div class="cabinet-grid">
+        <aside class="cabinet-sidebar">
+            <ul class="cabinet-nav">
+                <li>
+                    <a href="/admin/vacancies" class="active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                            <path d="M9 5a2 2 0 002-2h2a2 2 0 002 2M9 5h6"/>
+                        </svg>
+                        Модерация вакансий
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/blacklist">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                        </svg>
+                        Черный список
+                    </a>
+                </li>
+                <li>
+                    <a href="/">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        </svg>
+                        На сайт
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="cabinet-content">
+            <div class="detail-section">
+                <h2>Добро пожаловать, <%= user.full_name %>!</h2>
+                <p style="color: var(--text-secondary);">
+                    Используйте меню слева для управления платформой. 
+                    Вакансии работодателей требуют модерации перед публикацией.
+                </p>
+            </div>
+        </main>
+    </div>
+</div>
