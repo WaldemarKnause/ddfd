@@ -1,0 +1,56 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Резюме специалистов</h1>
+    </div>
+
+    <form action="/resumes" method="GET" class="filters">
+        <input type="text" name="search" class="form-control" placeholder="Поиск..." value="<%= filters.search || '' %>">
+        <select name="profession" class="form-control">
+            <option value="">Все специальности</option>
+            <option value="Пескоструйщик" <%= filters.profession === 'Пескоструйщик' ? 'selected' : '' %>>Пескоструйщик</option>
+            <option value="Маляр" <%= filters.profession === 'Маляр' ? 'selected' : '' %>>Маляр</option>
+            <option value="Промышленный альпинист" <%= filters.profession === 'Промышленный альпинист' ? 'selected' : '' %>>Промышленный альпинист</option>
+        </select>
+        <select name="city" class="form-control">
+            <option value="">Все города</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <a href="/resumes" class="btn btn-secondary">Сбросить</a>
+    </form>
+
+    <div class="flex-between mb-6">
+        <p style="color: var(--text-secondary); font-size: 14px;">Найдено: <strong><%= resumes.length %></strong> резюме</p>
+    </div>
+
+    <% if (resumes.length === 0) { %>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 12H4M12 20V4"/>
+            </svg>
+            <h3>Резюме не найдены</h3>
+            <p>Попробуйте изменить параметры поиска</p>
+        </div>
+    <% } else { %>
+        <div class="vacancies-grid">
+            <% resumes.forEach(resume => { %>
+                <a href="/resumes/<%= resume.id %>" class="resume-card">
+                    <h3><%= resume.profession %></h3>
+                    <div class="spec-name"><%= resume.full_name %> · <%= resume.city %></div>
+                    <% if (resume.experience_years) { %>
+                        <div class="vacancy-meta" style="margin-top: 12px;">
+                            <span>Опыт: <%= resume.experience_years %> лет</span>
+                        </div>
+                    <% } %>
+                    <% if (resume.salary_expectation) { %>
+                        <div class="salary">
+                            <%= resume.salary_expectation.toLocaleString() %> ₽
+                        </div>
+                    <% } %>
+                    <div class="tags">
+                        <span class="tag"><%= resume.profession %></span>
+                    </div>
+                </a>
+            <% }) %>
+        </div>
+    <% } %>
+</div>

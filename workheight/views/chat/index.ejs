@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="page-header">
+        <a href="/cabinet/<%= user.type === 'specialist' ? 'specialist' : 'employer' %>" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">← Назад</a>
+        <h1 style="margin-top: 16px;">Чат</h1>
+    </div>
+
+    <div class="chat-layout">
+        <div class="chat-list">
+            <div class="chat-list-header">Диалоги</div>
+            <% if (allChats.length === 0) { %>
+                <div class="empty-state" style="padding: 24px;">
+                    <p>Нет диалогов</p>
+                </div>
+            <% } else { %>
+                <% allChats.forEach(c => { %>
+                    <a href="/chat/<%= c.id %>" class="chat-item <%= c.id == chat.id ? 'active' : '' %>">
+                        <div class="chat-avatar"><%= c.other_name ? c.other_name.charAt(0).toUpperCase() : '?' %></div>
+                        <div class="chat-info">
+                            <div class="chat-name"><%= c.other_name %></div>
+                            <div class="chat-preview"><%= c.last_message || '' %></div>
+                        </div>
+                    </a>
+                <% }) %>
+            <% } %>
+        </div>
+
+        <div class="chat-main">
+            <div class="chat-header">
+                <h3><%= otherUser.full_name %></h3>
+                <a href="/resumes/<%= otherUser.id %>" class="btn btn-sm btn-secondary" style="display: none;">Профиль</a>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <% messages.forEach(msg => { %>
+                    <div class="message <%= msg.sender_id == user.id ? 'message-sent' : 'message-received' %>">
+                        <div class="message-text"><%= msg.text %></div>
+                        <div class="message-time"><%= new Date(msg.created_at).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}) %></div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <form action="/chat/<%= chat.id %>/send" method="POST" class="chat-input">
+                <input type="text" name="text" class="form-control" placeholder="Введите сообщение..." required>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+initChat(<%= chat.id %>);
+</script>

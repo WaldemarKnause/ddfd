@@ -1,0 +1,51 @@
+<div class="container" style="max-width: 720px;">
+    <div class="page-header">
+        <a href="/cabinet/specialist" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">← Назад в личный кабинет</a>
+        <h1 style="margin-top: 16px;"><%= resume ? 'Редактировать резюме' : 'Создать резюме' %></h1>
+    </div>
+
+    <div class="detail-section">
+        <% if (error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+
+        <form action="/resumes/create" method="POST">
+            <div class="form-group">
+                <label for="profession">Специальность *</label>
+                <select id="profession" name="profession" class="form-control" required>
+                    <option value="">Выберите специальность</option>
+                    <% professions.forEach(prof => { %>
+                        <option value="<%= prof %>" <%= resume && resume.profession === prof ? 'selected' : '' %>><%= prof %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="city">Город *</label>
+                <input type="text" id="city" name="city" class="form-control" required placeholder="Москва" value="<%= resume ? resume.city : '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="experience_years">Опыт работы (лет)</label>
+                <input type="number" id="experience_years" name="experience_years" class="form-control" placeholder="5" value="<%= resume ? resume.experience_years : '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="salary_expectation">Ожидаемая зарплата (₽)</label>
+                <input type="number" id="salary_expectation" name="salary_expectation" class="form-control" placeholder="80000" value="<%= resume ? resume.salary_expectation : '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="education">Образование</label>
+                <textarea id="education" name="education" class="form-control" placeholder="Учебные заведения, курсы, сертификаты..."><%= resume ? resume.education : '' %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="description">О себе</label>
+                <textarea id="description" name="description" class="form-control" placeholder="Расскажите о своём опыте, навыках, выполненных проектах..."><%= resume ? resume.description : '' %></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary"><%= resume ? 'Сохранить' : 'Создать резюме' %></button>
+        </form>
+    </div>
+</div>

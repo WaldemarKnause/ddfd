@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="<%= typeof theme !== 'undefined' ? theme : 'light' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title + ' — ' : '' %>WorkHeight</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-user-id="<%= user ? user.id : '' %>">
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                WorkHeight
+            </a>
+
+            <nav class="nav">
+                <a href="/vacancies" class="<%= typeof activePage !== 'undefined' && activePage === 'vacancies' ? 'active' : '' %>">Вакансии</a>
+                <a href="/resumes" class="<%= typeof activePage !== 'undefined' && activePage === 'resumes' ? 'active' : '' %>">Резюме</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" title="Сменить тему">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+
+                <% if (user) { %>
+                    <% if (user.type === 'specialist') { %>
+                        <a href="/cabinet/specialist" class="btn btn-secondary">Личный кабинет</a>
+                    <% } else if (user.type === 'employer') { %>
+                        <a href="/cabinet/employer" class="btn btn-secondary">Личный кабинет</a>
+                    <% } else if (user.type === 'admin') { %>
+                        <a href="/admin" class="btn btn-secondary">Админ-панель</a>
+                    <% } %>
+                    <a href="/logout" class="btn btn-secondary">Выход</a>
+                <% } else { %>
+                    <a href="/login" class="btn btn-secondary">Войти</a>
+                    <a href="/register" class="btn btn-primary">Регистрация</a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>Работа на высоте —<br>профессионалам</h1>
+                <p>Специализированная доска объявлений для пескоструйщиков, маляров и промышленных альпинистов. Быстрый поиск работы и специалистов.</p>
+
+                <form action="/vacancies" method="GET" class="search-box">
+                    <input type="text" name="search" class="form-control" placeholder="Поиск по ключевым словам...">
+                    <button type="submit" class="btn btn-primary">Найти</button>
+                </form>
+
+                <div class="professions">
+                    <% professions.forEach(prof => { %>
+                        <a href="/vacancies?profession=<%= encodeURIComponent(prof) %>" class="profession-tag"><%= prof %></a>
+                    <% }) %>
+                </div>
+            </div>
+        </section>
+
+        <!-- Latest Vacancies -->
+        <section class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Последние вакансии</h2>
+                    <a href="/vacancies" class="btn btn-secondary">Все вакансии</a>
+                </div>
+
+                <% if (vacancies.length === 0) { %>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 12H4M12 20V4"/>
+                        </svg>
+                        <h3>Вакансий пока нет</h3>
+                        <p>Будьте первым — опубликуйте вакансию</p>
+                    </div>
+                <% } else { %>
+                    <div class="vacancies-grid">
+                        <% vacancies.forEach(vacancy => { %>
+                            <a href="/vacancies/<%= vacancy.id %>" class="vacancy-card">
+                                <h3><%= vacancy.title %></h3>
+                                <div class="company"><%= vacancy.organization_name %></div>
+                                <div class="vacancy-meta">
+                                    <span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <%= vacancy.city %>
+                                    </span>
+                                    <span><%= vacancy.profession %></span>
+                                    <% if (vacancy.employment_type) { %>
+                                        <span><%= vacancy.employment_type %></span>
+                                    <% } %>
+                                </div>
+                                <% if (vacancy.salary_from || vacancy.salary_to) { %>
+                                    <div class="salary">
+                                        <%= vacancy.salary_from ? vacancy.salary_from.toLocaleString() : '' %><% if (vacancy.salary_from && vacancy.salary_to) { %> — <% } %><%= vacancy.salary_to ? vacancy.salary_to.toLocaleString() : '' %> ₽
+                                    </div>
+                                <% } %>
+                                <div class="tags">
+                                    <span class="tag"><%= vacancy.profession %></span>
+                                    <% if (vacancy.employment_type) { %>
+                                        <span class="tag"><%= vacancy.employment_type %></span>
+                                    <% } %>
+                                </div>
+                            </a>
+                        <% }) %>
+                    </div>
+                <% } %>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="section" style="background: var(--surface); padding: 48px 0;">
+            <div class="container">
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Специализации</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value"><%= vacancies.length %></div>
+                        <div class="stat-label">Активных вакансий</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">Без посредников</div>
+                        <div class="stat-label">Прямой контакт</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">0 ₽</div>
+                        <div class="stat-label">Комиссия</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Professions Detail -->
+        <section class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Наши специализации</h2>
+                </div>
+                <div class="vacancies-grid">
+                    <div class="vacancy-card" style="cursor: default;">
+                        <h3>Пескоструйщики</h3>
+                        <div class="company">Абразивная обработка поверхностей</div>
+                        <div class="vacancy-meta">
+                            <span>Очистка металла</span>
+                            <span>Подготовка к покраске</span>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Пескоструйное оборудование</span>
+                            <span class="tag">СИЗ</span>
+                            <span class="tag">Промышленный альпинизм</span>
+                        </div>
+                    </div>
+                    <div class="vacancy-card" style="cursor: default;">
+                        <h3>Маляры</h3>
+                        <div class="company">Покрасочные работы</div>
+                        <div class="vacancy-meta">
+                            <span>Промышленная покраска</span>
+                            <span>Антикоррозийная защита</span>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Окрасочные аппараты</span>
+                            <span class="tag">Покраска на высоте</span>
+                        </div>
+                    </div>
+                    <div class="vacancy-card" style="cursor: default;">
+                        <h3>Промышленные альпинисты</h3>
+                        <div class="company">Работа на высоте</div>
+                        <div class="vacancy-meta">
+                            <span>Высотные работы</span>
+                            <span>Монтаж и обслуживание</span>
+                        </div>
+                        <div class="tags">
+                            <span class="tag">Промышленный альпинизм</span>
+                            <span class="tag">Работа с страховкой</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div>&copy; 2024 WorkHeight — Доска вакансий для промышленных специалистов</div>
+                <div>Пескоструйщики • Маляры • Промышленные альпинисты</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/theme.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Вакансии</h1>
+    </div>
+
+    <form action="/vacancies" method="GET" class="filters">
+        <input type="text" name="search" class="form-control" placeholder="Поиск..." value="<%= filters.search || '' %>">
+        <select name="profession" class="form-control">
+            <option value="">Все специальности</option>
+            <% professions.forEach(prof => { %>
+                <option value="<%= prof %>" <%= filters.profession === prof ? 'selected' : '' %>><%= prof %></option>
+            <% }) %>
+        </select>
+        <select name="city" class="form-control">
+            <option value="">Все города</option>
+            <% cities.forEach(city => { %>
+                <option value="<%= city %>" <%= filters.city === city ? 'selected' : '' %>><%= city %></option>
+            <% }) %>
+        </select>
+        <select name="employment_type" class="form-control">
+            <option value="">Тип занятости</option>
+            <option value="Полная занятость" <%= filters.employment_type === 'Полная занятость' ? 'selected' : '' %>>Полная занятость</option>
+            <option value="Частичная занятость" <%= filters.employment_type === 'Частичная занятость' ? 'selected' : '' %>>Частичная занятость</option>
+            <option value="Разовая работа" <%= filters.employment_type === 'Разовая работа' ? 'selected' : '' %>>Разовая работа</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Найти</button>
+        <a href="/vacancies" class="btn btn-secondary">Сбросить</a>
+    </form>
+
+    <div class="flex-between mb-6">
+        <p style="color: var(--text-secondary); font-size: 14px;">Найдено: <strong><%= vacancies.length %></strong> вакансий</p>
+        <% if (user && user.type === 'employer') { %>
+            <a href="/vacancies/create" class="btn btn-primary">+ Создать вакансию</a>
+        <% } %>
+    </div>
+
+    <% if (vacancies.length === 0) { %>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 12H4M12 20V4"/>
+            </svg>
+            <h3>Вакансии не найдены</h3>
+            <p>Попробуйте изменить параметры поиска или станьте первым работодателем</p>
+        </div>
+    <% } else { %>
+        <div class="vacancies-grid">
+            <% vacancies.forEach(vacancy => { %>
+                <a href="/vacancies/<%= vacancy.id %>" class="vacancy-card">
+                    <h3><%= vacancy.title %></h3>
+                    <div class="company"><%= vacancy.organization_name %> · <%= vacancy.organization_type %></div>
+                    <div class="vacancy-meta">
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <%= vacancy.city %>
+                        </span>
+                        <span><%= vacancy.profession %></span>
+                        <% if (vacancy.employment_type) { %>
+                            <span><%= vacancy.employment_type %></span>
+                        <% } %>
+                    </div>
+                    <% if (vacancy.salary_from || vacancy.salary_to) { %>
+                        <div class="salary">
+                            <%= vacancy.salary_from ? vacancy.salary_from.toLocaleString() : '' %><% if (vacancy.salary_from && vacancy.salary_to) { %> — <% } %><%= vacancy.salary_to ? vacancy.salary_to.toLocaleString() : '' %> ₽
+                        </div>
+                    <% } %>
+                    <div class="tags">
+                        <span class="tag"><%= vacancy.profession %></span>
+                        <% if (vacancy.employment_type) { %>
+                            <span class="tag"><%= vacancy.employment_type %></span>
+                        <% } %>
+                    </div>
+                </a>
+            <% }) %>
+        </div>
+    <% } %>
+</div>

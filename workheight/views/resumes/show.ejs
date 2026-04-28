@@ -1,0 +1,59 @@
+<div class="container">
+    <div class="page-header">
+        <a href="/resumes" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">← Назад к резюме</a>
+    </div>
+
+    <div class="detail-header">
+        <h1><%= resume.profession %></h1>
+        <div class="detail-meta">
+            <span><strong><%= resume.full_name %></strong></span>
+            <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; vertical-align: middle;">
+                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <%= resume.city %>
+            </span>
+            <% if (resume.experience_years) { %>
+                <span>Опыт: <%= resume.experience_years %> лет</span>
+            <% } %>
+        </div>
+    </div>
+
+    <% if (resume.salary_expectation) { %>
+        <div class="detail-section" style="background: rgba(16, 185, 129, 0.05); border-color: var(--success);">
+            <h2 style="color: var(--success);">Ожидаемая зарплата</h2>
+            <div class="salary" style="font-size: 24px;">
+                <%= resume.salary_expectation.toLocaleString() %> ₽
+            </div>
+        </div>
+    <% } %>
+
+    <% if (resume.education) { %>
+        <div class="detail-section">
+            <h2>Образование</h2>
+            <p><%= resume.education %></p>
+        </div>
+    <% } %>
+
+    <% if (resume.description) { %>
+        <div class="detail-section">
+            <h2>О себе</h2>
+            <p><%= resume.description %></p>
+        </div>
+    <% } %>
+
+    <div class="detail-section">
+        <h2>Контакты</h2>
+        <% if (user && user.type === 'employer') { %>
+            <p>Email: <a href="mailto:<%= resume.email %>" style="color: var(--accent);"><%= resume.email %></a></p>
+            <% if (resume.phone) { %>
+                <p>Телефон: <%= resume.phone %></p>
+            <% } %>
+        <% } else { %>
+            <div class="alert alert-warning">
+                Только работодатели видят контактные данные
+            </div>
+        <% } %>
+    </div>
+</div>

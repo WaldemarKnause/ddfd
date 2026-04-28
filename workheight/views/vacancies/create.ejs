@@ -1,0 +1,71 @@
+<div class="container" style="max-width: 720px;">
+    <div class="page-header">
+        <a href="/cabinet/employer" style="color: var(--text-secondary); text-decoration: none; font-size: 14px;">← Назад в личный кабинет</a>
+        <h1 style="margin-top: 16px;">Создать вакансию</h1>
+    </div>
+
+    <div class="detail-section">
+        <p style="color: var(--text-secondary); margin-bottom: 24px;">
+            Ваша вакансия будет отправлена на модерацию и появится на сайте после проверки администратором.
+        </p>
+
+        <% if (error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+
+        <form action="/vacancies/create" method="POST">
+            <div class="form-group">
+                <label for="title">Название вакансии *</label>
+                <input type="text" id="title" name="title" class="form-control" required placeholder="Например: Пескоструйщик на объект">
+            </div>
+
+            <div class="form-group">
+                <label for="profession">Специальность *</label>
+                <select id="profession" name="profession" class="form-control" required>
+                    <option value="">Выберите специальность</option>
+                    <% professions.forEach(prof => { %>
+                        <option value="<%= prof %>"><%= prof %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="city">Город *</label>
+                <input type="text" id="city" name="city" class="form-control" required placeholder="Москва">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="salary_from">Зарплата от (₽)</label>
+                    <input type="number" id="salary_from" name="salary_from" class="form-control" placeholder="50000">
+                </div>
+                <div class="form-group">
+                    <label for="salary_to">Зарплата до (₽)</label>
+                    <input type="number" id="salary_to" name="salary_to" class="form-control" placeholder="100000">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="employment_type">Тип занятости</label>
+                <select id="employment_type" name="employment_type" class="form-control">
+                    <option value="">Выберите тип</option>
+                    <option value="Полная занятость">Полная занятость</option>
+                    <option value="Частичная занятость">Частичная занятость</option>
+                    <option value="Разовая работа">Разовая работа</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Описание вакансии</label>
+                <textarea id="description" name="description" class="form-control" placeholder="Подробнее о вакансии, условиях работы, объектах..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="requirements">Требования к кандидату</label>
+                <textarea id="requirements" name="requirements" class="form-control" placeholder="Опыт работы, навыки, документы..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Отправить на модерацию</button>
+        </form>
+    </div>
+</div>
